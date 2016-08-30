@@ -9,7 +9,9 @@
 <body onselectstart="return false">
 <div id="content">
 	<div id="game">
-		<canvas id="canvas" width="480px" height="480px">
+		<canvas id="canvas" width="480px" height="480px"
+		onmousedown="mouse_down(event)" onmouseup="mouse_up(event)" 
+		onmousemove="mouse_move(event)" onmouseout="mouse_touch_end()" >
 		</canvas>
 	</div>
 	<div>
