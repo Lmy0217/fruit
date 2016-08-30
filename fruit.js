@@ -778,15 +778,12 @@ function mouse_touch_end() {
 }
 
 function mouse_down(event) {
-	mouse_touch_down(event.clientX - c.offsetLeft, event.clientY - c.offsetTop);
+	mouse_touch_down(event.offsetX, event.offsetY);
 }
-function mouse_move(e) {
-	x = e.clientX - c.offsetLeft;
-	y = e.clientY - c.offsetTop;
-	mouse_touch_move(x, y);
+function mouse_move(event) {
+	mouse_touch_move(event.offsetX, event.offsetY);
 }
 function mouse_up(event) {
-	//alert("up");
 	is_press = false;
 }
 
@@ -834,3 +831,18 @@ function set_focus(mode, rows, cols) { // 将当前点击的坐标设置为点�
 
 	ctx.stroke();
 }
+
+
+
+
+function music() {
+	var bgm = document.getElementById("bgm");
+	if(bgm.paused) {
+		bgm.play();
+	} else {
+		bgm.pause();
+	}
+};
+
+
+

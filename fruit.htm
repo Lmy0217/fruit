@@ -8,14 +8,25 @@
 </head>
 <body onselectstart="return false">
 <div id="content">
+	<div id="left">
+		<div>
+			<p>当前分数: <span id="score">0</span></p>
+		</div>
+		<div>
+			<audio id="bgm" src="bgm.mp3" autoplay="autoplay" loop="loop"></audio>
+		</div>
+		<div id="btn">
+			<button onclick="javascript:music();">背景音乐</button><br>
+			<button>排行榜</button><br>
+			<button>历史数据</button><br>
+			<button onclick="javascript:createPrompt();">帮助</button>
+		</div>
+	</div>
 	<div id="game">
 		<canvas id="canvas" width="480px" height="480px"
 		onmousedown="mouse_down(event)" onmouseup="mouse_up(event)" 
 		onmousemove="mouse_move(event)" onmouseout="mouse_touch_end()" >
 		</canvas>
-	</div>
-	<div>
-		<p>当前分数: <span id="score">0</span></p>
 	</div>
 </div>
 
