@@ -4,7 +4,8 @@
 <meta charset="UTF-8">
 <title>fruit</title>
 <link rel="stylesheet" href="fruit.css" />
-
+<script src="jquery-3.1.0.min.js"></script>
+<script src="layer/layer.js"></script>
 </head>
 <body onselectstart="return false">
 <div id="content">
@@ -17,9 +18,9 @@
 		</div>
 		<div id="btn">
 			<button onclick="javascript:music();">背景音乐</button><br>
-			<button>排行榜</button><br>
-			<button>历史数据</button><br>
-			<button onclick="javascript:createPrompt();">帮助</button>
+			<button onclick="javascript:rank();">排行榜</button><br>
+			<button onclick="javascript:scorehistory();">历史数据</button><br>
+			<button onclick="javascript:help();">帮助</button>
 		</div>
 	</div>
 	<div id="game">

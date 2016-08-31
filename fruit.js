@@ -37,6 +37,10 @@ var ADDITION = 1; // 分数加成权值
 var block;//用于保存每个方块的类型
 var block_status;//用于保存每个方块的状态
 
+if (localStorage.getItem("count") == null) {
+	localStorage.setItem("count", 0);
+}
+
 block = new Array();
 block_status = new Array();
 for(var i = -3; i < BLOCK_ROWS + 3; i++) {
@@ -599,7 +603,6 @@ function check_over() {
 		for (var j = 0; j < BLOCK_COLS; j++) {
 			//搜索是否存在4种基本的可消牌型
 			this_type = block[i][j];
-			//if (this_type == 8) return true;//存在超能宝石则必定不为死局
 			if (this_type == block[i - 1][j])
 				if ((this_type == block[i + 1][j + 1]) || (this_type == block[i + 1][j - 1]) ||	(this_type == block[i - 2][j - 1]) || (this_type == block[i - 2][j + 1]) || (this_type == block[i + 2][j]) || (this_type == block[i - 3][j]) || (this_type == block[i - 2][j]))
 					sum++;
@@ -614,11 +617,9 @@ function check_over() {
 					sum++;
 		}
 	if (sum == 0) {
-		alert("无法移动！\n您在本局游戏中共获得: " + SCORE +" 分\n总共消除: " + ALL_SUM + " 个宝石\n单次最多消除: " + ONE_SUM + " 个宝石\n确定后再来一局！");
-		start();
+		gameover(SCORE, ALL_SUM, ONE_SUM);
 	}
 }
-
 
 function get_rand() {
 	rand = parseInt(Math.random() * BLOCK_TYPE) + 1;
@@ -833,6 +834,19 @@ function set_focus(mode, rows, cols) { // 将当前点击的坐标设置为点�
 }
 
 
+function gameover(score, all_sum, one_sum) {
+	var count = parseInt(localStorage.getItem("count")) + 1;
+	localStorage.setItem("count", count);
+	localStorage.setItem(count, "" + score + "," + (new Date()).valueOf());
+	layer.open({
+		title: '游戏结束',
+		shift: 3,
+		content: "无法移动！<br>您在本局游戏中共获得: " + score +" 分<br>总共消除: " + all_sum + " 个宝石<br>单次最多消除: " + one_sum + " 个宝石",
+		btn: "再来一局",
+		closeBtn: 0,
+		yes: function(){start();layer.closeAll();}
+	});
+};
 
 
 function music() {
@@ -846,3 +860,83 @@ function music() {
 
 
 
+function rank() {
+	var count = parseInt(localStorage.getItem("count"));
+	var content = "<div style=\"overflow-y:scroll;width:100%;height:100%\">" +
+		"<table class=\"bordered\"><thead><tr><th>排名</th><th>分数</th><th>时间</th></tr></thead>";
+	var data = new Array(count);
+	for(var i = 0; i < count; i++) {
+		data[i] = localStorage.getItem(i + 1).split(",");
+	}
+	data.sort(function(a, b){
+		if(parseInt(a[0]) > parseInt(b[0]) || (parseInt(a[0]) == parseInt(b[0]) && a[1] <= b[1])) return -1;
+		else return 1;
+	});
+	for(var i = 0; i < count; i++) {
+		var score = data[i][0];
+		var time = date(data[i][1]);
+		content += "<tr><td>" + (i + 1) + "</td><td>" + score + "</td><td>" + time + "</td></tr>";
+	}
+	content += "</table></div>";
+	layer.open({
+		type: 1,
+		title: '排行榜',
+		shift: 3,
+		area: ["600px", "400px"],
+		content: content
+	});
+}
+
+
+function scorehistory() {
+	var count = parseInt(localStorage.getItem("count"));
+	var content = "<div style=\"overflow-y:scroll;width:100%;height:100%\">" +
+		"<table class=\"bordered\"><thead><tr><th>分数</th><th>时间</th></tr></thead>";
+	var data = new Array(count);
+	for(var i = 0; i < count; i++) {
+		data[i] = localStorage.getItem(i + 1).split(",");
+	}
+	data.sort(function(a, b){
+		if(a[1] >= b[1]) return -1;
+		else return 1;
+	});
+	for(var i = 0; i < count; i++) {
+		var score = data[i][0];
+		var time = date(data[i][1]);
+		content += "<tr><td>" + score + "</td><td>" + time + "</td></tr>";
+	}
+	content += "</table></div>";
+	layer.open({
+		type: 1,
+		title: '历史数据',
+		shift: 3,
+		area: ["600px", "400px"],
+		content: content
+	});
+}
+
+
+function date(time) {
+	var d = new Date(parseInt(time));
+	var Y = d.getFullYear();
+	var M = parseInt(d.getMonth());
+	M = (M + 1) < 10 ? ("0" + (M + 1)) : (M + 1);
+	var D = parseInt(d.getDate());
+	D = D < 10 ? ("0" + D) : D;
+	var h = parseInt(d.getHours());
+	h = h < 10 ? ("0" + h) : h;
+	var m = parseInt(d.getMinutes());
+	m = m < 10 ? ("0" + m) : m;
+	var s = parseInt(d.getSeconds());
+	s = s < 10 ? ("0" + s) : s;
+	return Y + "-" + M + "-" + D + " " + h + ":" + m + ":" + s;
+}
+
+
+function help() {
+	layer.open({
+		title: '帮助',
+		shift: 3,
+		content: '操作方法：<br>(1)点击一个方块之后再点击另一个方块<br>(2)拖拽某个方块<br><br>支持浏览器：<br>Google Chrome, Mozilla FireFox<br>推荐使用Google Chrome浏览器获得最佳体验<br><br>made by myluo',
+  });
+}
