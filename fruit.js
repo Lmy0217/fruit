@@ -865,7 +865,7 @@ function gameover(score, all_sum, one_sum, type) {
 		content: "" + info + "！<br>您在本局游戏中共获得: " + score +" 分<br>总共消除: " + all_sum + " 个宝石<br>单次最多消除: " + one_sum + " 个宝石",
 		btn: "再来一局",
 		closeBtn: 0,
-		yes: function(){start();layer.closeAll();}
+		yes: function(){restart();layer.closeAll();}
 	});
 };
 
