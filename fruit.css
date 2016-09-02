@@ -9,7 +9,10 @@ html, body {
 	overflow: hidden;
 	margin: 0;
 	padding: 0;
+	user-select: none;
 	-moz-user-select: none;
+	-webkit-user-select: none;
+	-webkit-text-size-adjust: none;
 }
 
 #content {
@@ -124,5 +127,18 @@ table {
     border-radius: 0 0 6px 0;
 }
 
+#left_top {
+	width: 200px;
+	height: 200px;
+	margin: 0;
+}
 
+.game_time{width:138px;height:138px;margin: 31px;}
 
+/* time scroll*/
+.pie{width:138px;height:138px;border-radius:69px;position:absolute;}
+.pie1{clip:rect(0px,138px,138px,69px);-o-transform:rotate(0deg);-moz-transform:rotate(0deg);-webkit-transform:rotate(0deg);background-color:#fff;}
+.pie2{clip:rect(0px,69px,138px,0px);-o-transform:rotate(0deg);-moz-transform:rotate(0deg);-webkit-transform:rotate(0deg);background-color:#fff;}
+.hold{width:138px;height:138px;position:absolute;z-index:1;}
+.bg{width:138px;height:138px;border-radius:69px;position:absolute;background-color:#d13c36;}
+.score{width:128px;height:128px;margin:5px 0 0 5px;background-color:#e45534;border-radius:128px;position:absolute;z-index:1;text-align:center;line-height:128px;font-size:30px;color:#fff;}

@@ -1,4 +1,7 @@
 
+var mybeta = 0;
+var myalpha = 0;
+
 var c = document.getElementById("canvas");
 var ctx = c.getContext("2d");
 
@@ -15,10 +18,14 @@ var DROP_PIXEL = 10;// 每单位时间下落的像素
 var MOVE_TIME = 20;// 方块移动的单位时间
 var BLAST_TIME = 20;// 方块消除单位时间
 var DROP_TIME = 10;// 方块下落单位时间
+var TYPE = 0;
+var t1 = -1;
 
 var is_move_time = false;// 当前是否有方块正在移动
 var is_blast_time = false; // 当前是否有方块正在消除
 var is_drop_time = false; // 当前是否有方块正在下落
+var is_time = false;
+var is_restart = false;
 
 var is_press = false; // 判断鼠标是否为按下状态
 var is_key_down = false; // 判断键盘按键是否按下状态
@@ -57,6 +64,7 @@ start();
 //document.onkeyup = key_up;
 
 function start() {
+	//alert("start");
 	SCORE = 0;
 	ALL_SUM = 0;
 	ONE_SUM = 0;
@@ -71,7 +79,18 @@ function start() {
 	}
 	if (check_blast(-1, -1, -1, -1, -1, -1, true)) start(); // 直到开局无法自动消除为止
 
-	document.getElementById("score").innerHTML = SCORE;
+	if(is_restart) {
+		if(t1 != -1) {
+			cleartime();
+			clearInterval(t1);
+			is_time = false;
+		}
+		is_restart = false;
+	}
+	if(!is_time && TYPE == 1)
+		countDown();
+	//document.getElementById("score").innerHTML = SCORE;
+	$(".score").html(SCORE);
 }
 
 
@@ -617,7 +636,7 @@ function check_over() {
 					sum++;
 		}
 	if (sum == 0) {
-		gameover(SCORE, ALL_SUM, ONE_SUM);
+		gameover(SCORE, ALL_SUM, ONE_SUM, 0);
 	}
 }
 
@@ -652,7 +671,8 @@ function add_score(n, status) {
 	}
 	if (n > ONE_SUM) ONE_SUM = n;
 	ALL_SUM += n;
-	document.getElementById("score").innerHTML = SCORE;
+	//document.getElementById("score").innerHTML = SCORE;
+	$(".score").html(SCORE);
 }
 
 function shape(type, x, y, status, scale) {
@@ -834,14 +854,15 @@ function set_focus(mode, rows, cols) { // 将当前点击的坐标设置为点�
 }
 
 
-function gameover(score, all_sum, one_sum) {
+function gameover(score, all_sum, one_sum, type) {
 	var count = parseInt(localStorage.getItem("count")) + 1;
 	localStorage.setItem("count", count);
 	localStorage.setItem(count, "" + score + "," + (new Date()).valueOf());
+	var info = type == 0 ? "无法移动" : "时间结束";
 	layer.open({
 		title: '游戏结束',
 		shift: 3,
-		content: "无法移动！<br>您在本局游戏中共获得: " + score +" 分<br>总共消除: " + all_sum + " 个宝石<br>单次最多消除: " + one_sum + " 个宝石",
+		content: "" + info + "！<br>您在本局游戏中共获得: " + score +" 分<br>总共消除: " + all_sum + " 个宝石<br>单次最多消除: " + one_sum + " 个宝石",
 		btn: "再来一局",
 		closeBtn: 0,
 		yes: function(){start();layer.closeAll();}
@@ -940,3 +961,75 @@ function help() {
 		content: '操作方法：<br>(1)点击一个方块之后再点击另一个方块<br>(2)拖拽某个方块<br><br>支持浏览器：<br>Google Chrome, Mozilla FireFox<br>推荐使用Google Chrome浏览器获得最佳体验<br><br>made by myluo',
   });
 }
+
+
+
+
+function restart() {
+	is_restart = true;
+	start();
+}
+
+function tips() {
+	
+}
+
+function normal() {
+	TYPE = 0;
+	restart();
+}
+
+function timerial() {
+	TYPE = 1;
+	restart();
+}
+
+
+
+function start1() {
+	
+	if(myalpha == 0) {
+		mybeta += 360 / 600;
+	} else {
+		mybeta += myalpha;
+		myalpha = 0;
+	}
+	
+	if(mybeta < 180){
+		$(".pie1").css("-o-transform","rotate(" + mybeta + "deg)");
+		$(".pie1").css("-moz-transform","rotate(" + mybeta + "deg)");
+		$(".pie1").css("-webkit-transform","rotate(" + mybeta + "deg)");
+	}else{
+		$(".pie2").css("backgroundColor", "#d13c36");
+		$(".pie2").css("-o-transform","rotate(" + mybeta + "deg)");
+		$(".pie2").css("-moz-transform","rotate(" + mybeta + "deg)");
+		$(".pie2").css("-webkit-transform","rotate(" + mybeta + "deg)");
+	}
+	
+	if(mybeta >= 360) {
+		mybeta = 0;
+		clearInterval(t1);
+		is_time = false;
+		gameover(SCORE, ALL_SUM, ONE_SUM, 1);
+	}
+}
+
+
+function cleartime() {
+	$(".pie1").css("-o-transform","rotate(0deg)");
+	$(".pie1").css("-moz-transform","rotate(0deg)");
+	$(".pie1").css("-webkit-transform","rotate(0deg)");
+	$(".pie2").css("backgroundColor", "#fff");
+	$(".pie2").css("-o-transform","rotate(0deg)");
+	$(".pie2").css("-moz-transform","rotate(0deg)");
+	$(".pie2").css("-webkit-transform","rotate(0deg)");
+	mybeta = 0;
+	myalpha = 0;
+}
+
+
+function countDown() {
+	cleartime();
+    t1 = setInterval("start1()", 100);
+	is_time = true;
+} 
