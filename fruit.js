@@ -698,31 +698,59 @@ function shape(type, x, y, status, scale) {
 	} */
 	ctx.beginPath();
 	if(type == 1) { //紫色的三角形
-		color = "#E50CE6";
+		/* color = "#E50CE6";
 		ctx.moveTo((x + 30) * scale, (y + 5)* scale);
 		ctx.lineTo((x + 55) * scale, (y + 55) * scale);
-		ctx.lineTo((x + 5) * scale, (y + 55) * scale);
+		ctx.lineTo((x + 5) * scale, (y + 55) * scale); */
+		var img = new Image();
+		img.src = "svg/grape.svg";
+		if(img.complete) {
+			ctx.drawImage(img, x * scale, y * scale, 60 * scale, 60 * scale);
+		} else {
+			img.onload = function(){ctx.drawImage(img, x * scale, y * scale, 60 * scale, 60 * scale);};
+		}
 	} else if(type == 2) { //黄色的四边形 菱形
-		color = "#F9CC16";
+		/* color = "#F9CC16";
 		ctx.moveTo((x + 30) * scale, (y + 5) * scale);
 		ctx.lineTo((x + 55) * scale, (y + 30) * scale);
 		ctx.lineTo((x + 30) * scale, (y + 55) * scale);
-		ctx.lineTo((x + 5) * scale, (y + 30) * scale);
+		ctx.lineTo((x + 5) * scale, (y + 30) * scale); */
+		var img = new Image();
+		img.src = "svg/banana.svg";
+		if(img.complete) {
+			ctx.drawImage(img, x * scale, y * scale, 60 * scale, 60 * scale);
+		} else {
+			img.onload = function(){ctx.drawImage(img, x * scale, y * scale, 60 * scale, 60 * scale);};
+		}
 	} else if(type == 3) { //蓝色的五边形 钻石
-		color = "#0B73F0";
+		/* color = "#0B73F0";
 		ctx.moveTo((x + 20) * scale, (y + 5) * scale);
 		ctx.lineTo((x + 40) * scale, (y + 5) * scale);
 		ctx.lineTo((x + 55) * scale, (y + 20) * scale);
 		ctx.lineTo((x + 30) * scale, (y + 55) * scale);
-		ctx.lineTo((x + 5) * scale, (y + 20) * scale);
+		ctx.lineTo((x + 5) * scale, (y + 20) * scale); */
+		var img = new Image();
+		img.src = "svg/pear.svg";
+		if(img.complete) {
+			ctx.drawImage(img, x * scale, y * scale, 60 * scale, 60 * scale);
+		} else {
+			img.onload = function(){ctx.drawImage(img, x * scale, y * scale, 60 * scale, 60 * scale);};
+		}
 	} else if(type == 4) { //橙色的六边形
-		color = "#F9862F";
+		/* color = "#F9862F";
 		ctx.moveTo((x + 30) * scale, (y + 5) * scale);
 		ctx.lineTo((x + 52) * scale, (y + 17) * scale);
 		ctx.lineTo((x + 52) * scale, (y + 42) * scale);
 		ctx.lineTo((x + 30) * scale, (y + 55) * scale);
 		ctx.lineTo((x + 8) * scale, (y + 42) * scale);
-		ctx.lineTo((x + 8) * scale, (y + 17) * scale);
+		ctx.lineTo((x + 8) * scale, (y + 17) * scale); */
+		var img = new Image();
+		img.src = "svg/orange.svg";
+		if(img.complete) {
+			ctx.drawImage(img, x * scale, y * scale, 60 * scale, 60 * scale);
+		} else {
+			img.onload = function(){ctx.drawImage(img, x * scale, y * scale, 60 * scale, 60 * scale);};
+		}
 	} else if(type == 5) { //红色的八边形
 		/* color = "#EA1530";
 		ctx.moveTo((x + 16) * scale, (y + 8) * scale);
@@ -736,7 +764,7 @@ function shape(type, x, y, status, scale) {
 		//img = new Image();
 		//img.src = "";
 		var img = new Image();
-		img.src = "apple.svg";
+		img.src = "svg/apple.svg";
 		if(img.complete) {
 			ctx.drawImage(img, x * scale, y * scale, 60 * scale, 60 * scale);
 		} else {
@@ -747,7 +775,7 @@ function shape(type, x, y, status, scale) {
 		//img.onload = function(){ctx.drawImage(img, x * scale, y * scale, 60 * scale, 60 * scale);};
 		//img.src = "apple.svg";
 	} else if(type == 6) { //绿色的十边形
-		color = "#27C941";
+		/* color = "#27C941";
 		ctx.moveTo((x + 22) * scale, (y + 8) * scale);
 		ctx.lineTo((x + 36) * scale, (y + 8) * scale);
 		ctx.lineTo((x + 48) * scale, (y + 12) * scale);
@@ -757,10 +785,24 @@ function shape(type, x, y, status, scale) {
 		ctx.lineTo((x + 22) * scale, (y + 52) * scale);
 		ctx.lineTo((x + 12) * scale, (y + 48) * scale);
 		ctx.lineTo((x + 5) * scale, (y + 30) * scale);
-		ctx.lineTo((x + 12) * scale, (y + 12) * scale);
+		ctx.lineTo((x + 12) * scale, (y + 12) * scale); */
+		var img = new Image();
+		img.src = "svg/watermelon.svg";
+		if(img.complete) {
+			ctx.drawImage(img, x * scale, y * scale, 60 * scale, 60 * scale);
+		} else {
+			img.onload = function(){ctx.drawImage(img, x * scale, y * scale, 60 * scale, 60 * scale);};
+		}
 	} else if(type == 7) { // 白色的十二边形  还是做成圆吧
-		color = "#D3D3D3";
-		ctx.arc((x + 30) * scale, (y + 30) * scale, 25 * scale, 0, 2 * Math.PI);
+		/* color = "#D3D3D3";
+		ctx.arc((x + 30) * scale, (y + 30) * scale, 25 * scale, 0, 2 * Math.PI); */
+		var img = new Image();
+		img.src = "svg/coconut.svg";
+		if(img.complete) {
+			ctx.drawImage(img, x * scale, y * scale, 60 * scale, 60 * scale);
+		} else {
+			img.onload = function(){ctx.drawImage(img, x * scale, y * scale, 60 * scale, 60 * scale);};
+		}
 	}
 
 	ctx.closePath();
