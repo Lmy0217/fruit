@@ -1186,10 +1186,7 @@ function tips() {
 			sleep(this,10);
 			this.NextStep=function() {
 				set_focus("cancel", x2, y2);
-				sleep(this,10);
-				this.NextStep=function() {
-					is_tips = false;
-				}
+				is_tips = false;
 			}
 		}
 	}
