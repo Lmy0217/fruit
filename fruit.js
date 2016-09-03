@@ -74,6 +74,8 @@ window.onload = start();
 
 function start() {
 	//alert("start");
+	tip = [];
+	tipindex = 0;
 	SCORE = 0;
 	ALL_SUM = 0;
 	ONE_SUM = 0;
@@ -755,14 +757,19 @@ function add_score(n, status) {
 
 function shape(type, x, y, status, scale) {
 	var color;
-
+	ctx.globalCompositeOperation = "source-over";
+	ctx.shadowBlur = 4;
+	ctx.shadowColor = "black";
+	ctx.shadowOffsetX = 1;
+	ctx.shadowOffsetY = 1;
+	
 	//var shadow_color;
 	/* if(type == 5) {
 		var img = new Image();
 		img.src = "apple.svg";
 		img.onload = function(){ctx.drawImage(img, x * scale, y * scale, 60 * scale, 60 * scale);};
 	} */
-	ctx.beginPath();
+	//ctx.beginPath();
 	if(type == 1) { //紫色的三角形
 		/* color = "#E50CE6";
 		ctx.moveTo((x + 30) * scale, (y + 5)* scale);
@@ -885,24 +892,21 @@ function shape(type, x, y, status, scale) {
 		}
 	}
 
-	ctx.closePath();
+	//ctx.closePath();
 
-	ctx.globalCompositeOperation = "source-over";
+	
 
 	//边框
-	ctx.strokeStyle = "black";
-	ctx.lineWidth = 1;//线条宽度
-	ctx.miterLimit = 2;//斜接长度
-	ctx.stroke();
+	//ctx.strokeStyle = "black";
+	//ctx.lineWidth = 1;//线条宽度
+	//ctx.miterLimit = 2;//斜接长度
+	//ctx.stroke();
 
-	ctx.fillStyle = color;
-	ctx.fill();
+	//ctx.fillStyle = color;
+	//ctx.fill();
 
 	//阴影
-	ctx.shadowBlur = 4;
-	ctx.shadowColor = "black";
-	ctx.shadowOffsetX = 1;
-	ctx.shadowOffsetY = 1;
+	
 }
 
 
