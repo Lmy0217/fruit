@@ -3,6 +3,9 @@
 //var img = new Image();
 //img.src = "apple.svg";
 
+var tip = [];
+var tipindex = 0;
+
 
 var mybeta = 0;
 var myalpha = 0;
@@ -31,6 +34,7 @@ var is_blast_time = false; // 当前是否有方块正在消除
 var is_drop_time = false; // 当前是否有方块正在下落
 var is_time = false;
 var is_restart = false;
+var is_tips = false;
 
 var is_press = false; // 判断鼠标是否为按下状态
 var is_key_down = false; // 判断键盘按键是否按下状态
@@ -82,8 +86,9 @@ function start() {
 			//shape(rand, turn_pixel(j), turn_pixel(i), 0, 1);
 		}
 	}
-	if (check_blast(-1, -1, -1, -1, -1, -1, true)) {start();} // 直到开局无法自动消除为止
-	else {
+	if (check_blast(-1, -1, -1, -1, -1, -1, true)) {
+		start();   // 直到开局无法自动消除为止
+	} else {
 		for(var i = 0; i < BLOCK_ROWS; i++) {
 			for(var j = 0; j < BLOCK_COLS; j++) {
 				shape(block[i][j], turn_pixel(j), turn_pixel(i), 0, 1);
@@ -627,25 +632,86 @@ function drop() {
 }
 
 
+function addtips(x1, y1, x2, y2) {
+	var index = (x1 * BLOCK_COLS + y1) * 100 + (x2 * BLOCK_COLS + y2);
+	var i;
+	for(i = 0; i < tip.length; i++) {
+		if(tip[i] == index) break;
+	}
+	if(i == tip.length) tip[tip.length] = index;
+}
+
+
 function check_over() {
 	var sum = 0;
 	var this_type = -1; // 当前方块的类型
+
+	tip = [];
+	tipindex = 0;
 	for (var i = 0; i < BLOCK_ROWS; i++)
 		for (var j = 0; j < BLOCK_COLS; j++) {
 			//搜索是否存在4种基本的可消牌型
 			this_type = block[i][j];
-			if (this_type == block[i - 1][j])
-				if ((this_type == block[i + 1][j + 1]) || (this_type == block[i + 1][j - 1]) ||	(this_type == block[i - 2][j - 1]) || (this_type == block[i - 2][j + 1]) || (this_type == block[i + 2][j]) || (this_type == block[i - 3][j]) || (this_type == block[i - 2][j]))
-					sum++;
-			if (this_type == block[i][j - 1])
-				if ((this_type == block[i + 1][j + 1]) || (this_type == block[i - 1][j + 1]) || (this_type == block[i + 1][j - 2]) || (this_type == block[i - 1][j - 2]) || (this_type == block[i][j + 2]) || (this_type == block[i][j - 3]) || (this_type == block[i][j - 2]))
-					sum++;
-			if (this_type == block[i - 2][j])
-				if ((this_type == block[i - 1][j - 1]) || (this_type == block[i - 1][j + 1]))
-					sum++;
-			if (this_type == block[i][j - 2])
-				if ((this_type == block[i - 1][j - 1]) || (this_type == block[i + 1][j - 1]))
-					sum++;
+			if (this_type == block[i - 1][j]) {
+				sum++;
+				if (this_type == block[i + 1][j + 1]) {
+					addtips(i + 1, j, i + 1, j + 1);
+				} else if (this_type == block[i + 1][j - 1]) {
+					addtips(i + 1, j, i + 1, j - 1);
+				} else if (this_type == block[i - 2][j - 1]) {
+					addtips(i - 2, j, i - 2, j - 1);
+				} else if (this_type == block[i - 2][j + 1]) {
+					addtips(i - 2, j, i - 2, j + 1);
+				} else if (this_type == block[i + 2][j]) {
+					addtips(i + 1, j, i + 2, j);
+				} else if (this_type == block[i - 3][j]) {
+					addtips(i - 2, j, i - 3, j);
+				} else if (this_type == block[i - 2][j]) {
+
+				} else {
+					sum--;
+				}
+			}
+			if (this_type == block[i][j - 1]) {
+				sum++;
+				if (this_type == block[i + 1][j + 1]) {
+					addtips(i, j + 1, i + 1, j + 1);
+				} else if (this_type == block[i - 1][j + 1]) {
+					addtips(i, j + 1, i - 1, j + 1);
+				} else if (this_type == block[i + 1][j - 2]) {
+					addtips(i, j - 2, i + 1, j - 2);
+				} else if (this_type == block[i - 1][j - 2]) {
+					addtips(i, j - 2, i - 1, j - 2);
+				} else if (this_type == block[i][j + 2]) {
+					addtips(i, j + 1, i, j + 2);
+				} else if (this_type == block[i][j - 3]) {
+					addtips(i, j - 2, i, j - 3);
+				} else if (this_type == block[i][j - 2]) {
+
+				} else {
+					sum--;
+				}
+			}
+			if (this_type == block[i - 2][j]) {
+				sum++;
+				if (this_type == block[i - 1][j - 1]) {
+					addtips(i - 1, j, i - 1, j - 1);
+				} else if (this_type == block[i - 1][j + 1]) {
+					addtips(i - 1, j, i - 1, j + 1);
+				} else {
+					sum--;
+				}
+			}
+			if (this_type == block[i][j - 2]) {
+				sum++;
+				if (this_type == block[i - 1][j - 1]) {
+					addtips(i, j - 1, i - 1, j - 1);
+				} else if (this_type == block[i + 1][j - 1]) {
+					addtips(i, j - 1, i + 1, j - 1);
+				} else {
+					sum--;
+				}
+			}
 		}
 	if (sum == 0) {
 		gameover(SCORE, ALL_SUM, ONE_SUM, 0);
@@ -689,7 +755,7 @@ function add_score(n, status) {
 
 function shape(type, x, y, status, scale) {
 	var color;
-	
+
 	//var shadow_color;
 	/* if(type == 5) {
 		var img = new Image();
@@ -707,7 +773,9 @@ function shape(type, x, y, status, scale) {
 		if(img.complete) {
 			ctx.drawImage(img, x * scale, y * scale, 60 * scale, 60 * scale);
 		} else {
-			img.onload = function(){ctx.drawImage(img, x * scale, y * scale, 60 * scale, 60 * scale);};
+			img.onload = function() {
+				ctx.drawImage(img, x * scale, y * scale, 60 * scale, 60 * scale);
+			};
 		}
 	} else if(type == 2) { //黄色的四边形 菱形
 		/* color = "#F9CC16";
@@ -720,7 +788,9 @@ function shape(type, x, y, status, scale) {
 		if(img.complete) {
 			ctx.drawImage(img, x * scale, y * scale, 60 * scale, 60 * scale);
 		} else {
-			img.onload = function(){ctx.drawImage(img, x * scale, y * scale, 60 * scale, 60 * scale);};
+			img.onload = function() {
+				ctx.drawImage(img, x * scale, y * scale, 60 * scale, 60 * scale);
+			};
 		}
 	} else if(type == 3) { //蓝色的五边形 钻石
 		/* color = "#0B73F0";
@@ -734,7 +804,9 @@ function shape(type, x, y, status, scale) {
 		if(img.complete) {
 			ctx.drawImage(img, x * scale, y * scale, 60 * scale, 60 * scale);
 		} else {
-			img.onload = function(){ctx.drawImage(img, x * scale, y * scale, 60 * scale, 60 * scale);};
+			img.onload = function() {
+				ctx.drawImage(img, x * scale, y * scale, 60 * scale, 60 * scale);
+			};
 		}
 	} else if(type == 4) { //橙色的六边形
 		/* color = "#F9862F";
@@ -749,7 +821,9 @@ function shape(type, x, y, status, scale) {
 		if(img.complete) {
 			ctx.drawImage(img, x * scale, y * scale, 60 * scale, 60 * scale);
 		} else {
-			img.onload = function(){ctx.drawImage(img, x * scale, y * scale, 60 * scale, 60 * scale);};
+			img.onload = function() {
+				ctx.drawImage(img, x * scale, y * scale, 60 * scale, 60 * scale);
+			};
 		}
 	} else if(type == 5) { //红色的八边形
 		/* color = "#EA1530";
@@ -768,7 +842,9 @@ function shape(type, x, y, status, scale) {
 		if(img.complete) {
 			ctx.drawImage(img, x * scale, y * scale, 60 * scale, 60 * scale);
 		} else {
-			img.onload = function(){ctx.drawImage(img, x * scale, y * scale, 60 * scale, 60 * scale);};
+			img.onload = function() {
+				ctx.drawImage(img, x * scale, y * scale, 60 * scale, 60 * scale);
+			};
 		}
 		//img.src = "apple.svg";
 		//ctx.drawImage(img, x * scale, y * scale, 60 * scale, 60 * scale);
@@ -791,7 +867,9 @@ function shape(type, x, y, status, scale) {
 		if(img.complete) {
 			ctx.drawImage(img, x * scale, y * scale, 60 * scale, 60 * scale);
 		} else {
-			img.onload = function(){ctx.drawImage(img, x * scale, y * scale, 60 * scale, 60 * scale);};
+			img.onload = function() {
+				ctx.drawImage(img, x * scale, y * scale, 60 * scale, 60 * scale);
+			};
 		}
 	} else if(type == 7) { // 白色的十二边形  还是做成圆吧
 		/* color = "#D3D3D3";
@@ -801,7 +879,9 @@ function shape(type, x, y, status, scale) {
 		if(img.complete) {
 			ctx.drawImage(img, x * scale, y * scale, 60 * scale, 60 * scale);
 		} else {
-			img.onload = function(){ctx.drawImage(img, x * scale, y * scale, 60 * scale, 60 * scale);};
+			img.onload = function() {
+				ctx.drawImage(img, x * scale, y * scale, 60 * scale, 60 * scale);
+			};
 		}
 	}
 
@@ -827,7 +907,7 @@ function shape(type, x, y, status, scale) {
 
 
 function mouse_touch_down(x, y) {
-	if(is_move_time || is_blast_time || is_drop_time) return false;
+	if(is_move_time || is_blast_time || is_drop_time || is_tips) return false;
 	is_press = true;
 	now_cols = parseInt(x / BLOCK_HEIGHT);
 	now_rows = parseInt(y / BLOCK_WIDTH);
@@ -847,7 +927,7 @@ function mouse_touch_down(x, y) {
 }
 function mouse_touch_move(x, y) {
 
-	if (! is_press || is_move_time || is_blast_time || is_drop_time) return false;
+	if (! is_press || is_move_time || is_blast_time || is_drop_time || is_tips) return false;
 	//alert(123);
 	var this_cols = turn_coordinate(x);
 	var this_rows = turn_coordinate(y);
@@ -865,6 +945,7 @@ function mouse_touch_move(x, y) {
 	}
 }
 function mouse_touch_end() {
+	if(is_tips) return false;
 	set_focus("cancel", focus_rows, focus_cols);
 	focus_rows = -1;
 	focus_cols= -1;
@@ -900,11 +981,11 @@ function set_focus(mode, rows, cols) { // 将当前点击的坐标设置为点�
 		ctx.globalCompositeOperation = "destination-out";
 	}
 	ctx.lineWidth = 2;
-	
+
 	ctx.shadowBlur = 0;
 	ctx.shadowOffsetX = 0;
 	ctx.shadowOffsetY = 0;
-	
+
 	ctx.beginPath();
 	ctx.moveTo(this_x + 1,this_y + 15);
 	ctx.lineTo(this_x + 1,this_y + 1);
@@ -932,13 +1013,16 @@ function gameover(score, all_sum, one_sum, type) {
 	localStorage.setItem("count", count);
 	localStorage.setItem(count, "" + score + "," + (new Date()).valueOf());
 	var info = type == 0 ? "无法移动" : "时间结束";
-	layer.open({
-		title: '游戏结束',
+	layer.open( {
+title: '游戏结束',
 		shift: 3,
-		content: "" + info + "！<br>您在本局游戏中共获得: " + score +" 分<br>总共消除: " + all_sum + " 个宝石<br>单次最多消除: " + one_sum + " 个宝石",
-		btn: "再来一局",
+content: "" + info + "！<br>您在本局游戏中共获得: " + score +" 分<br>总共消除: " + all_sum + " 个宝石<br>单次最多消除: " + one_sum + " 个宝石",
+btn: "再来一局",
 		closeBtn: 0,
-		yes: function(){restart();layer.closeAll();}
+yes: function() {
+			restart();
+			layer.closeAll();
+		}
 	});
 };
 
@@ -957,12 +1041,12 @@ function music() {
 function rank() {
 	var count = parseInt(localStorage.getItem("count"));
 	var content = "<div style=\"overflow-y:scroll;width:100%;height:100%\">" +
-		"<table class=\"bordered\"><thead><tr><th>排名</th><th>分数</th><th>时间</th></tr></thead>";
+	              "<table class=\"bordered\"><thead><tr><th>排名</th><th>分数</th><th>时间</th></tr></thead>";
 	var data = new Array(count);
 	for(var i = 0; i < count; i++) {
 		data[i] = localStorage.getItem(i + 1).split(",");
 	}
-	data.sort(function(a, b){
+	data.sort(function(a, b) {
 		if(parseInt(a[0]) > parseInt(b[0]) || (parseInt(a[0]) == parseInt(b[0]) && a[1] <= b[1])) return -1;
 		else return 1;
 	});
@@ -972,12 +1056,12 @@ function rank() {
 		content += "<tr><td>" + (i + 1) + "</td><td>" + score + "</td><td>" + time + "</td></tr>";
 	}
 	content += "</table></div>";
-	layer.open({
+	layer.open( {
 		type: 1,
-		title: '排行榜',
+title: '排行榜',
 		shift: 3,
-		area: ["600px", "400px"],
-		content: content
+area: ["600px", "400px"],
+content: content
 	});
 }
 
@@ -985,12 +1069,12 @@ function rank() {
 function scorehistory() {
 	var count = parseInt(localStorage.getItem("count"));
 	var content = "<div style=\"overflow-y:scroll;width:100%;height:100%\">" +
-		"<table class=\"bordered\"><thead><tr><th>分数</th><th>时间</th></tr></thead>";
+	              "<table class=\"bordered\"><thead><tr><th>分数</th><th>时间</th></tr></thead>";
 	var data = new Array(count);
 	for(var i = 0; i < count; i++) {
 		data[i] = localStorage.getItem(i + 1).split(",");
 	}
-	data.sort(function(a, b){
+	data.sort(function(a, b) {
 		if(a[1] >= b[1]) return -1;
 		else return 1;
 	});
@@ -1000,12 +1084,12 @@ function scorehistory() {
 		content += "<tr><td>" + score + "</td><td>" + time + "</td></tr>";
 	}
 	content += "</table></div>";
-	layer.open({
+	layer.open( {
 		type: 1,
-		title: '历史数据',
+title: '历史数据',
 		shift: 3,
-		area: ["600px", "400px"],
-		content: content
+area: ["600px", "400px"],
+content: content
 	});
 }
 
@@ -1028,11 +1112,11 @@ function date(time) {
 
 
 function help() {
-	layer.open({
-		title: '帮助',
+	layer.open( {
+title: '帮助',
 		shift: 3,
-		content: '操作方法：<br>(1)点击一个方块之后再点击另一个方块<br>(2)拖拽某个方块<br><br>支持浏览器：<br>Google Chrome, Mozilla FireFox<br>推荐使用Google Chrome浏览器获得最佳体验<br><br>made by myluo',
-  });
+content: '操作方法：<br>(1)点击一个方块之后再点击另一个方块<br>(2)拖拽某个方块<br><br>支持浏览器：<br>Google Chrome, Mozilla FireFox<br>推荐使用Google Chrome浏览器获得最佳体验<br><br>made by myluo',
+	});
 }
 
 
@@ -1043,8 +1127,72 @@ function restart() {
 	start();
 }
 
+
+function sleep(obj,iMinSecond) {
+	if (window.eventList==null) window.eventList=new Array();
+	var ind=-1;
+	for (var i=0; i<window.eventList.length; i++) {
+		if (window.eventList[i]==null) {
+			window.eventList[i]=obj;
+			ind=i;
+			break;
+			　　
+		}
+		　　
+	}
+	　　
+	if (ind==-1) {
+		ind=window.eventList.length;
+		window.eventList[ind]=obj;
+		　　
+	}
+	setTimeout("GoOn(" + ind + ")",1000);
+	　　
+}
+
+function GoOn(ind) {
+	var obj=window.eventList[ind];
+	window.eventList[ind]=null;
+	if (obj.NextStep) obj.NextStep();
+	else obj();
+	　　
+}
+
 function tips() {
-	
+	if (is_press || is_move_time || is_blast_time || is_drop_time || is_tips) return false;
+	if(tip.length == 0) check_over();
+	var index = tip[tipindex];
+	if(tipindex == tip.length - 1) tipindex = 0;
+	else tipindex++;
+
+	var first = parseInt(index / 100);
+	var second = index % 100;
+
+	var x1 = parseInt(first / BLOCK_COLS);
+	var y1 = first % BLOCK_COLS;
+	var x2 = parseInt(second / BLOCK_COLS);
+	var y2 = second % BLOCK_COLS;
+
+	//alert(x1 + "," + y1 + "," + x2 + "," + y2)
+
+	is_tips = true;
+	set_focus("add", x1, y1);
+	sleep(this,10);
+	this.NextStep=function() {
+		set_focus("cancel", x1, y1);
+		sleep(this,10);
+		this.NextStep=function() {
+			set_focus("add", x2, y2);
+			sleep(this,10);
+			this.NextStep=function() {
+				set_focus("cancel", x2, y2);
+				sleep(this,10);
+				this.NextStep=function() {
+					is_tips = false;
+				}
+			}
+		}
+	}
 }
 
 function normal() {
@@ -1060,25 +1208,25 @@ function timerial() {
 
 
 function start1() {
-	
+
 	if(myalpha == 0) {
 		mybeta += 360 / 600;
 	} else {
 		mybeta += myalpha;
 		myalpha = 0;
 	}
-	
-	if(mybeta < 180){
+
+	if(mybeta < 180) {
 		$(".pie1").css("-o-transform","rotate(" + mybeta + "deg)");
 		$(".pie1").css("-moz-transform","rotate(" + mybeta + "deg)");
 		$(".pie1").css("-webkit-transform","rotate(" + mybeta + "deg)");
-	}else{
+	} else {
 		$(".pie2").css("backgroundColor", "#d13c36");
 		$(".pie2").css("-o-transform","rotate(" + mybeta + "deg)");
 		$(".pie2").css("-moz-transform","rotate(" + mybeta + "deg)");
 		$(".pie2").css("-webkit-transform","rotate(" + mybeta + "deg)");
 	}
-	
+
 	if(mybeta >= 360) {
 		mybeta = 0;
 		clearInterval(t1);
@@ -1103,6 +1251,6 @@ function cleartime() {
 
 function countDown() {
 	cleartime();
-    t1 = setInterval("start1()", 100);
+	t1 = setInterval("start1()", 100);
 	is_time = true;
-} 
+}
