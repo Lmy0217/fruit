@@ -1,4 +1,9 @@
 
+//var img;
+//var img = new Image();
+//img.src = "apple.svg";
+
+
 var mybeta = 0;
 var myalpha = 0;
 
@@ -58,7 +63,7 @@ for(var i = -3; i < BLOCK_ROWS + 3; i++) {
 		block_status[i][j] = 0;
 	}
 }
-start();
+window.onload = start();
 
 //document.onkeydown = key_down;
 //document.onkeyup = key_up;
@@ -74,10 +79,17 @@ function start() {
 			rand = get_rand();
 			block[i][j] = rand;
 			block_status[i][j] = 0;
-			shape(rand, turn_pixel(j), turn_pixel(i), 0, 1);
+			//shape(rand, turn_pixel(j), turn_pixel(i), 0, 1);
 		}
 	}
-	if (check_blast(-1, -1, -1, -1, -1, -1, true)) start(); // 直到开局无法自动消除为止
+	if (check_blast(-1, -1, -1, -1, -1, -1, true)) {start();} // 直到开局无法自动消除为止
+	else {
+		for(var i = 0; i < BLOCK_ROWS; i++) {
+			for(var j = 0; j < BLOCK_COLS; j++) {
+				shape(block[i][j], turn_pixel(j), turn_pixel(i), 0, 1);
+			}
+		}
+	}
 
 	if(is_restart) {
 		if(t1 != -1) {
@@ -677,7 +689,13 @@ function add_score(n, status) {
 
 function shape(type, x, y, status, scale) {
 	var color;
+	
 	//var shadow_color;
+	/* if(type == 5) {
+		var img = new Image();
+		img.src = "apple.svg";
+		img.onload = function(){ctx.drawImage(img, x * scale, y * scale, 60 * scale, 60 * scale);};
+	} */
 	ctx.beginPath();
 	if(type == 1) { //紫色的三角形
 		color = "#E50CE6";
@@ -706,7 +724,7 @@ function shape(type, x, y, status, scale) {
 		ctx.lineTo((x + 8) * scale, (y + 42) * scale);
 		ctx.lineTo((x + 8) * scale, (y + 17) * scale);
 	} else if(type == 5) { //红色的八边形
-		color = "#EA1530";
+		/* color = "#EA1530";
 		ctx.moveTo((x + 16) * scale, (y + 8) * scale);
 		ctx.lineTo((x + 44) * scale, (y + 8) * scale);
 		ctx.lineTo((x + 52) * scale, (y + 16) * scale);
@@ -714,7 +732,20 @@ function shape(type, x, y, status, scale) {
 		ctx.lineTo((x + 44) * scale, (y + 52) * scale);
 		ctx.lineTo((x + 16) * scale, (y + 52) * scale);
 		ctx.lineTo((x + 8) * scale, (y + 44) * scale);
-		ctx.lineTo((x + 8) * scale, (y + 16) * scale);
+		ctx.lineTo((x + 8) * scale, (y + 16) * scale); */
+		//img = new Image();
+		//img.src = "";
+		var img = new Image();
+		img.src = "apple.svg";
+		if(img.complete) {
+			ctx.drawImage(img, x * scale, y * scale, 60 * scale, 60 * scale);
+		} else {
+			img.onload = function(){ctx.drawImage(img, x * scale, y * scale, 60 * scale, 60 * scale);};
+		}
+		//img.src = "apple.svg";
+		//ctx.drawImage(img, x * scale, y * scale, 60 * scale, 60 * scale);
+		//img.onload = function(){ctx.drawImage(img, x * scale, y * scale, 60 * scale, 60 * scale);};
+		//img.src = "apple.svg";
 	} else if(type == 6) { //绿色的十边形
 		color = "#27C941";
 		ctx.moveTo((x + 22) * scale, (y + 8) * scale);
