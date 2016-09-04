@@ -9,6 +9,7 @@ var tipindex = 0;
 
 var mybeta = 0;
 var myalpha = 0;
+var ALLTIME = 600;
 
 var c = document.getElementById("canvas");
 var ctx = c.getContext("2d");
@@ -309,6 +310,12 @@ function check_blast(obj_rows, obj_cols, obj_type, orl_rows, orl_cols, orl_type,
 			hit.load();
 			hit.play();
 		//}
+		
+		if(TYPE == 1) {
+			if(array_rows.length == 3) addtime(ALLTIME / 30);//2s
+			else if(array_rows.length == 4) addtime(ALLTIME / 12);//5s
+			else if(array_rows.length >= 5) addtime(ALLTIME / 6);//10s
+		}
 	
 		var time = 1;
 		var change = false; // 用于判断放大还是缩小
@@ -744,7 +751,9 @@ function set_status(rows, cols, status) {
 function add_score(n, status) {
 	if (status == 0) {
 		//SCORE += (200 * n - 300) * ADDITION;
-		SCORE += 100 * n;
+		if(n == 3) SCORE += 300;
+		else if(n == 4) SCORE += 500;
+		else SCORE += 200 * n;
 	} else if (status == 1) {
 		SCORE += (200 * n) * ADDITION;
 		BLOCK_FIRE++;
@@ -1019,17 +1028,25 @@ function set_focus(mode, rows, cols) { // 将当前点击的坐标设置为点�
 
 
 function gameover(score, all_sum, one_sum, type) {
+	var over = document.getElementById("over");
+	over.load();
+	over.play();
+	
 	var count = parseInt(localStorage.getItem("count")) + 1;
 	localStorage.setItem("count", count);
 	localStorage.setItem(count, "" + score + "," + (new Date()).valueOf());
 	var info = type == 0 ? "无法移动" : "时间结束";
+	if(TYPE == 1 && type == 0 && t1 != -1) {
+		clearInterval(t1);
+		is_time = false;
+	}
 	layer.open( {
-title: '游戏结束',
+		title: '游戏结束',
 		shift: 3,
-content: "" + info + "！<br>您在本局游戏中共获得: " + score +" 分<br>总共消除: " + all_sum + " 个宝石<br>单次最多消除: " + one_sum + " 个宝石",
-btn: "再来一局",
+		content: "" + info + "！<br>您在本局游戏中共获得: " + score +" 分<br>总共消除: " + all_sum + " 个宝石<br>单次最多消除: " + one_sum + " 个宝石",
+		btn: "再来一局",
 		closeBtn: 0,
-yes: function() {
+		yes: function() {
 			restart();
 			layer.closeAll();
 		}
@@ -1193,9 +1210,9 @@ function tips() {
 	sleep(this,10);
 	this.NextStep=function() {
 		set_focus("cancel", x1, y1);
-		if(is_tips) {
-			sleep(this,10);
-			this.NextStep=function() {
+		sleep(this,10);
+		this.NextStep=function() {
+			if(is_tips) {
 				set_focus("add", x2, y2);
 				sleep(this,10);
 				this.NextStep=function() {
@@ -1222,7 +1239,7 @@ function timerial() {
 function start1() {
 
 	if(myalpha == 0) {
-		mybeta += 360 / 600;
+		mybeta += 360 / ALLTIME;
 	} else {
 		mybeta += myalpha;
 		myalpha = 0;
@@ -1244,6 +1261,19 @@ function start1() {
 		clearInterval(t1);
 		is_time = false;
 		gameover(SCORE, ALL_SUM, ONE_SUM, 1);
+	}
+}
+
+
+function addtime(times) {
+	var addbeta = -360 / ALLTIME * times;
+	var newbeta = mybeta + addbeta;
+	myalpha = newbeta >= 0 ? addbeta : (-mybeta);
+	if(mybeta > 180 && newbeta < 180) {
+		$(".pie2").css("-o-transform","rotate(0deg)");
+		$(".pie2").css("-moz-transform","rotate(0deg)");
+		$(".pie2").css("-webkit-transform","rotate(0deg)");
+		$(".pie2").css("backgroundColor", "#fff");
 	}
 }
 
