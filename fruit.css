@@ -32,6 +32,10 @@ html, body {
 	height: 480px;
 	float: left;
 	background-color:#ccd1d9;
+	background: url(logo.png);
+	background-size: 100% auto;
+	background-repeat: no-repeat;
+	background-position: 0px 16px;
 }
 
 #game {
@@ -132,7 +136,8 @@ table {
 }
 
 
-.game_time{width:138px;height:138px;margin: 62px 31px 31px 31px;}
+/*.game_time{width:138px;height:138px;margin: 62px 31px 31px 31px;}*/
+.game_time{width:138px;height:138px;margin: 80px 31px 8px 31px;}
 
 /* time scroll*/
 .pie{width:138px;height:138px;border-radius:69px;position:absolute;}
