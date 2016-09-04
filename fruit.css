@@ -28,7 +28,7 @@ html, body {
 	width: 200px;
 	height: 480px;
 	float: left;
-	background-color:#cdcdcd;
+	background-color:#ccd1d9;
 }
 
 #game {
@@ -136,8 +136,8 @@ table {
 .pie1{clip:rect(0px,138px,138px,69px);-o-transform:rotate(0deg);-moz-transform:rotate(0deg);-webkit-transform:rotate(0deg);background-color:#fff;}
 .pie2{clip:rect(0px,69px,138px,0px);-o-transform:rotate(0deg);-moz-transform:rotate(0deg);-webkit-transform:rotate(0deg);background-color:#fff;}
 .hold{width:138px;height:138px;position:absolute;z-index:1;}
-.bg{width:138px;height:138px;border-radius:69px;position:absolute;background-color:#d13c36;}
-.score{width:128px;height:128px;margin:5px 0 0 5px;background-color:#e45534;border-radius:128px;position:absolute;z-index:1;text-align:center;line-height:128px;font-size:30px;color:#fff;}
+.bg{width:138px;height:138px;border-radius:69px;position:absolute;background-color:#4a89dc;}
+.score{width:128px;height:128px;margin:5px 0 0 5px;background-color:#5d9cec;border-radius:128px;position:absolute;z-index:1;text-align:center;line-height:128px;font-size:30px;color:#fff;}
 
 
 
@@ -220,8 +220,14 @@ table {
 .button:hover .shine {left: 12px;}
 .button:active .shine {opacity: 0;}
 
-.button.gray {background: #555;}
+/* .button.gray {background: #555;}
 .button.blue {background: #3a617e;}
+.button.green {background: #477343;}
+.button.red {background: #723131;}
+.button.purple {background: #4b3f5e;}
+.button.orange {background: #624529;} */
+.button.gray {background: #656d78;}
+.button.blue {background: #5d9cec;}
 .button.green {background: #477343;}
 .button.red {background: #723131;}
 .button.purple {background: #4b3f5e;}

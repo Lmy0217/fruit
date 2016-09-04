@@ -35,6 +35,7 @@ var is_drop_time = false; // 当前是否有方块正在下落
 var is_time = false;
 var is_restart = false;
 var is_tips = false;
+var is_music = true;
 
 var is_press = false; // 判断鼠标是否为按下状态
 var is_key_down = false; // 判断键盘按键是否按下状态
@@ -300,10 +301,15 @@ function check_blast(obj_rows, obj_cols, obj_type, orl_rows, orl_cols, orl_type,
 
 	add_score(array_rows.length, 0);
 
-
 	if (num == 0)
 		move(obj_rows, obj_cols,orl_rows, orl_cols, false);
 	else { // 消除宝石
+		//if(is_music) {
+			var hit = document.getElementById("hit");
+			hit.load();
+			hit.play();
+		//}
+	
 		var time = 1;
 		var change = false; // 用于判断放大还是缩小
 		timer_blast = setInterval(function() {
@@ -1035,8 +1041,10 @@ function music() {
 	var bgm = document.getElementById("bgm");
 	if(bgm.paused) {
 		bgm.play();
+		is_music = true;
 	} else {
 		bgm.pause();
+		is_music = false;
 	}
 };
 
@@ -1128,6 +1136,7 @@ content: '操作方法：<br>(1)点击一个方块之后再点击另一个方块
 
 function restart() {
 	is_restart = true;
+	is_tips = false;
 	start();
 }
 
@@ -1184,13 +1193,15 @@ function tips() {
 	sleep(this,10);
 	this.NextStep=function() {
 		set_focus("cancel", x1, y1);
-		sleep(this,10);
-		this.NextStep=function() {
-			set_focus("add", x2, y2);
+		if(is_tips) {
 			sleep(this,10);
 			this.NextStep=function() {
-				set_focus("cancel", x2, y2);
-				is_tips = false;
+				set_focus("add", x2, y2);
+				sleep(this,10);
+				this.NextStep=function() {
+					set_focus("cancel", x2, y2);
+					is_tips = false;
+				}
 			}
 		}
 	}
@@ -1222,7 +1233,7 @@ function start1() {
 		$(".pie1").css("-moz-transform","rotate(" + mybeta + "deg)");
 		$(".pie1").css("-webkit-transform","rotate(" + mybeta + "deg)");
 	} else {
-		$(".pie2").css("backgroundColor", "#d13c36");
+		$(".pie2").css("backgroundColor", "#4a89dc");
 		$(".pie2").css("-o-transform","rotate(" + mybeta + "deg)");
 		$(".pie2").css("-moz-transform","rotate(" + mybeta + "deg)");
 		$(".pie2").css("-webkit-transform","rotate(" + mybeta + "deg)");
