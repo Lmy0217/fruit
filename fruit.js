@@ -1296,3 +1296,35 @@ function countDown() {
 	t1 = setInterval("start1()", 100);
 	is_time = true;
 }
+
+
+var bgc_r = 255;
+var bgc_g = 255;
+var bgc_b = 158;
+var bgc_m = 1;
+
+function bgc() {
+	if(bgc_m == 1) {
+		if(bgc_b < 255) {
+			bgc_b++;
+			bgc_g--;
+		}
+		if(bgc_b == 255) bgc_m = 2;
+	} else if(bgc_m == 2) {
+		if(bgc_g < 255) {
+			bgc_g++;
+			bgc_r--;
+		}
+		if(bgc_g == 255) bgc_m = 3;
+	} else if(bgc_m == 3) {
+		if(bgc_r < 255) {
+			bgc_r++;
+			bgc_b--;
+		}
+		if(bgc_r == 255) bgc_m = 1;
+	}
+	
+	$("body").css("background", "rgba(" + bgc_r + "," + bgc_g + "," + bgc_b + ",1)");
+}
+
+setInterval("bgc()", 100);

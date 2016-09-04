@@ -19,9 +19,12 @@ html, body {
 	position: absolute;
 	top: 50%;
 	left: 50%;
-	margin: -240px 0 0 -340px;
+	margin: -244px 0 0 -344px;
 	width: 680px;
 	height: 480px;
+	border-style: solid;
+	border-width: 4px;
+	border-color: #656d78;
 }
 
 #left {
