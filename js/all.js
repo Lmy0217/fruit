@@ -1,15 +1,15 @@
 
-//var img;
-//var img = new Image();
-//img.src = "apple.svg";
-
+//提示
 var tip = [];
 var tipindex = 0;
 
-
+//时间
 var mybeta = 0;
 var myalpha = 0;
 var ALLTIME = 600;
+var t1 = -1;
+
+var imgname = ["grape", "banana", "pear", "orange", "apple", "watermelon", "coconut"];
 
 var c = document.getElementById("canvas");
 var ctx = c.getContext("2d");
@@ -28,7 +28,6 @@ var MOVE_TIME = 20;// 方块移动的单位时间
 var BLAST_TIME = 20;// 方块消除单位时间
 var DROP_TIME = 10;// 方块下落单位时间
 var TYPE = 0;
-var t1 = -1;
 
 var is_move_time = false;// 当前是否有方块正在移动
 var is_blast_time = false; // 当前是否有方块正在消除
@@ -53,20 +52,17 @@ var ONE_SUM = 0; // 单次最多消除方块数量
 var ADDITION = 1; // 分数加成权值
 
 var block;//用于保存每个方块的类型
-var block_status;//用于保存每个方块的状态
+
 
 if (localStorage.getItem("count") == null) {
 	localStorage.setItem("count", 0);
 }
 
 block = new Array();
-block_status = new Array();
 for(var i = -3; i < BLOCK_ROWS + 3; i++) {
 	block[i] = new Array();
-	block_status[i] = new Array();
 	for(var j = -3; j <= BLOCK_COLS + 3; j++) {
 		block[i][j] = -1;
-		block_status[i][j] = 0;
 	}
 }
 window.onload = start();
@@ -75,7 +71,6 @@ window.onload = start();
 //document.onkeyup = key_up;
 
 function start() {
-	//alert("start");
 	tip = [];
 	tipindex = 0;
 	SCORE = 0;
@@ -84,10 +79,8 @@ function start() {
 	ctx.clearRect(0, 0, BLOCK_WIDTH * BLOCK_COLS, BLOCK_HEIGHT * BLOCK_ROWS);
 	for(var i = 0; i < BLOCK_ROWS; i++) {
 		for(var j = 0; j < BLOCK_COLS; j++) {
-			rand = get_rand();
+			rand = parseInt(Math.random() * BLOCK_TYPE) + 1;
 			block[i][j] = rand;
-			block_status[i][j] = 0;
-			//shape(rand, turn_pixel(j), turn_pixel(i), 0, 1);
 		}
 	}
 	if (check_blast(-1, -1, -1, -1, -1, -1, true)) {
@@ -95,7 +88,7 @@ function start() {
 	} else {
 		for(var i = 0; i < BLOCK_ROWS; i++) {
 			for(var j = 0; j < BLOCK_COLS; j++) {
-				shape(block[i][j], turn_pixel(j), turn_pixel(i), 0, 1);
+				shape(block[i][j], j * BLOCK_WIDTH, i * BLOCK_WIDTH, 1);
 			}
 		}
 	}
@@ -110,7 +103,7 @@ function start() {
 	}
 	if(!is_time && TYPE == 1)
 		countDown();
-	//document.getElementById("score").innerHTML = SCORE;
+	
 	$(".score").html(SCORE);
 }
 
@@ -152,7 +145,7 @@ function check_blast(obj_rows, obj_cols, obj_type, orl_rows, orl_cols, orl_type,
 					i++;
 				}
 
-				check_special(flat_rows, flat_cols, vertical_rows, vertical_cols);
+				check_repeat(flat_rows, flat_cols, vertical_rows, vertical_cols);
 
 				if(flat_rows.length >= 3)
 					for(var m = 0; m < flat_rows.length; m++) {
@@ -262,9 +255,9 @@ function check_blast(obj_rows, obj_cols, obj_type, orl_rows, orl_cols, orl_type,
 				i--;
 		}
 
-		// 判断是否可以生成特殊宝石 并且去掉重复的坐标
-		check_special(orl_flat_rows, orl_flat_cols, orl_vertical_rows, orl_vertical_cols);
-		check_special(obj_flat_rows, obj_flat_cols, obj_vertical_rows, obj_vertical_cols);
+		// 去掉重复的坐标
+		check_repeat(orl_flat_rows, orl_flat_cols, orl_vertical_rows, orl_vertical_cols);
+		check_repeat(obj_flat_rows, obj_flat_cols, obj_vertical_rows, obj_vertical_cols);
 		if(orl_flat_rows.length >= 3)
 			for(var k = 0; k < orl_flat_rows.length; k++) {
 				if (orl_flat_rows[k] != -1) {
@@ -300,7 +293,7 @@ function check_blast(obj_rows, obj_cols, obj_type, orl_rows, orl_cols, orl_type,
 		if (mode) return num;
 	}
 
-	add_score(array_rows.length, 0);
+	add_score(array_rows.length);
 
 	if (num == 0)
 		move(obj_rows, obj_cols,orl_rows, orl_cols, false);
@@ -323,9 +316,9 @@ function check_blast(obj_rows, obj_cols, obj_type, orl_rows, orl_cols, orl_type,
 			if(time > 0) {
 				is_blast_time = true;
 				for(var k = 0; k < array_cols.length; k++) {
-					ctx.clearRect(turn_pixel(array_cols[k]) - 2, turn_pixel(array_rows[k]) - 2, BLOCK_HEIGHT + 5, BLOCK_WIDTH + 5);  //Clear the canvas
+					ctx.clearRect(array_cols[k] * BLOCK_WIDTH - 2, array_rows[k] * BLOCK_WIDTH - 2, BLOCK_HEIGHT + 5, BLOCK_WIDTH + 5);  //Clear the canvas
 					off = parseInt(BLOCK_WIDTH * 0.5 * (1 - time));
-					shape(block[array_rows[k]][array_cols[k]], 1 / time * (turn_pixel(array_cols[k]) + off), 1 / time * (turn_pixel(array_rows[k]) + off), block_status[array_rows[k]][array_cols[k]], time);
+					shape(block[array_rows[k]][array_cols[k]], 1 / time * (array_cols[k] * BLOCK_WIDTH + off), 1 / time * (array_rows[k] * BLOCK_WIDTH + off), time);
 				}
 				if (! change && (time < 1.15)) {
 					time += 0.05;
@@ -335,15 +328,14 @@ function check_blast(obj_rows, obj_cols, obj_type, orl_rows, orl_cols, orl_type,
 			} else {
 				//再清除一次图形，手机上会有无法消除的问题  依然无法解决
 				for(var k = 0; k < array_cols.length; k++) {
-					ctx.clearRect(turn_pixel(array_cols[k]) - 2, turn_pixel(array_rows[k]) - 2, BLOCK_HEIGHT + 5, BLOCK_WIDTH + 5);
+					ctx.clearRect(array_cols[k] * BLOCK_WIDTH - 2, array_rows[k] * BLOCK_WIDTH - 2, BLOCK_HEIGHT + 5, BLOCK_WIDTH + 5);
 				}
 
 				is_blast_time = false;
 				clearInterval(timer_blast);
 				for(var m = 0; m < array_rows.length; m++) {
 					block[array_rows[m]][array_cols[m]] = 0;
-					set_status(array_rows[m], array_cols[m], 0);
-					ctx.clearRect(turn_pixel(array_cols[m]), turn_pixel(array_rows[m]), BLOCK_HEIGHT, BLOCK_WIDTH);
+					ctx.clearRect(array_cols[m] * BLOCK_WIDTH, array_rows[m] * BLOCK_WIDTH, BLOCK_HEIGHT, BLOCK_WIDTH);
 				}
 				drop();
 			}
@@ -352,7 +344,7 @@ function check_blast(obj_rows, obj_cols, obj_type, orl_rows, orl_cols, orl_type,
 }
 
 
-function check_special(flat_rows, flat_cols, vertical_rows, vertical_cols) {
+function check_repeat(flat_rows, flat_cols, vertical_rows, vertical_cols) {
 	var flat_len = 0;
 	var vertical_len = 0;
 	// 去掉重复的坐标
@@ -381,23 +373,21 @@ function check_special(flat_rows, flat_cols, vertical_rows, vertical_cols) {
 function move(obj_rows, obj_cols, orl_rows, orl_cols, check) {
 	set_focus("cancel", focus_rows, focus_cols);
 	var mode;
-	cols = turn_pixel(orl_cols);
-	cols2 = turn_pixel(obj_cols);
-	rows = turn_pixel(orl_rows);
-	rows2 = turn_pixel(obj_rows);
+	cols = orl_cols * BLOCK_WIDTH;
+	cols2 = obj_cols * BLOCK_WIDTH;
+	rows = orl_rows * BLOCK_WIDTH;
+	rows2 = obj_rows * BLOCK_WIDTH;
 	orl_type = block[orl_rows][orl_cols];
 	obj_type = block[obj_rows][obj_cols];
-	orl_status = block_status[orl_rows][orl_cols];
-	obj_status = block_status[obj_rows][obj_cols];
 
 	if(obj_rows == orl_rows) { // 横向交换
 		if(obj_cols > orl_cols) { //向右换
 			timer = setInterval(function() {
-				if(turn_pixel(obj_cols) >= cols) {
+				if(obj_cols * BLOCK_WIDTH >= cols) {
 					is_move_time = true;
-					ctx.clearRect(turn_pixel(orl_cols), turn_pixel(orl_rows), 2 * BLOCK_HEIGHT,  BLOCK_WIDTH);  //Clear the canvas
-					shape(obj_type, cols2, rows2, obj_status, 1);
-					shape(orl_type, cols, rows, orl_status, 1);
+					ctx.clearRect(orl_cols * BLOCK_WIDTH, orl_rows * BLOCK_WIDTH, 2 * BLOCK_HEIGHT,  BLOCK_WIDTH);  //Clear the canvas
+					shape(obj_type, cols2, rows2, 1);
+					shape(orl_type, cols, rows, 1);
 					cols += MOVE_PIXEL;
 					cols2 -= MOVE_PIXEL;
 				} else {
@@ -405,19 +395,17 @@ function move(obj_rows, obj_cols, orl_rows, orl_cols, check) {
 					clearInterval(timer);  //Stop setInterval() when it arrives
 					block[orl_rows][orl_cols] = obj_type;
 					block[obj_rows][obj_cols] = orl_type;
-					set_status(orl_rows, orl_cols, obj_status);
-					set_status(obj_rows, obj_cols, orl_status);
 					if(check)
 						check_blast(orl_rows, orl_cols, block[orl_rows][orl_cols], obj_rows, obj_cols, block[obj_rows][obj_cols], false);
 				}
 			}, MOVE_TIME);
 		} else { //向左换
 			timer = setInterval(function() {
-				if(turn_pixel(obj_cols) <= cols) {
+				if(obj_cols * BLOCK_WIDTH <= cols) {
 					is_move_time = true;
-					ctx.clearRect(turn_pixel(obj_cols), turn_pixel(obj_rows), 2 * BLOCK_HEIGHT,  BLOCK_WIDTH);  //Clear the canvas
-					shape(obj_type, cols2, rows2, obj_status, 1);
-					shape(orl_type, cols, rows, orl_status, 1);
+					ctx.clearRect(obj_cols * BLOCK_WIDTH, obj_rows * BLOCK_WIDTH, 2 * BLOCK_HEIGHT,  BLOCK_WIDTH);  //Clear the canvas
+					shape(obj_type, cols2, rows2, 1);
+					shape(orl_type, cols, rows, 1);
 					cols -= MOVE_PIXEL;
 					cols2 += MOVE_PIXEL;
 				} else {
@@ -425,8 +413,6 @@ function move(obj_rows, obj_cols, orl_rows, orl_cols, check) {
 					clearInterval(timer);  //Stop setInterval() when it arrives
 					block[orl_rows][orl_cols] = obj_type;
 					block[obj_rows][obj_cols] = orl_type;
-					set_status(orl_rows, orl_cols, obj_status);
-					set_status(obj_rows, obj_cols, orl_status);
 					if(check)
 						check_blast(orl_rows, orl_cols, block[orl_rows][orl_cols], obj_rows, obj_cols, block[obj_rows][obj_cols], false);
 				}
@@ -435,11 +421,11 @@ function move(obj_rows, obj_cols, orl_rows, orl_cols, check) {
 	} else if(obj_cols == orl_cols) { // 纵向交换
 		if(obj_rows > orl_rows) { //向下换
 			timer = setInterval(function() {
-				if(turn_pixel(obj_rows) >= rows) {
+				if(obj_rows * BLOCK_WIDTH >= rows) {
 					is_move_time = true;
-					ctx.clearRect(turn_pixel(orl_cols), turn_pixel(orl_rows), BLOCK_HEIGHT, BLOCK_WIDTH * 2);  //Clear the canvas
-					shape(obj_type, cols2, rows2, obj_status, 1);
-					shape(orl_type, cols, rows, orl_status, 1);
+					ctx.clearRect(orl_cols * BLOCK_WIDTH, orl_rows * BLOCK_WIDTH, BLOCK_HEIGHT, BLOCK_WIDTH * 2);  //Clear the canvas
+					shape(obj_type, cols2, rows2, 1);
+					shape(orl_type, cols, rows, 1);
 					rows += MOVE_PIXEL;
 					rows2 -= MOVE_PIXEL;
 				} else {
@@ -447,19 +433,17 @@ function move(obj_rows, obj_cols, orl_rows, orl_cols, check) {
 					clearInterval(timer);  //Stop setInterval() when it arrives
 					block[orl_rows][orl_cols] = obj_type;
 					block[obj_rows][obj_cols] = orl_type;
-					set_status(orl_rows, orl_cols, obj_status);
-					set_status(obj_rows, obj_cols, orl_status);
 					if(check)
 						check_blast(orl_rows, orl_cols, block[orl_rows][orl_cols], obj_rows, obj_cols, block[obj_rows][obj_cols], false);
 				}
 			}, MOVE_TIME);
 		} else { // 向上换
 			timer = setInterval(function() {
-				if(turn_pixel(obj_rows) <= rows) {
+				if(obj_rows * BLOCK_WIDTH <= rows) {
 					is_move_time = true;
-					ctx.clearRect(turn_pixel(obj_cols), turn_pixel(obj_rows), BLOCK_HEIGHT, BLOCK_WIDTH * 2);  //Clear the canvas
-					shape(obj_type, cols2, rows2, obj_status, 1);
-					shape(orl_type, cols, rows, orl_status, 1);
+					ctx.clearRect(obj_cols * BLOCK_WIDTH, obj_rows * BLOCK_WIDTH, BLOCK_HEIGHT, BLOCK_WIDTH * 2);  //Clear the canvas
+					shape(obj_type, cols2, rows2, 1);
+					shape(orl_type, cols, rows, 1);
 					rows -= MOVE_PIXEL;
 					rows2 += MOVE_PIXEL;
 				} else {
@@ -467,8 +451,6 @@ function move(obj_rows, obj_cols, orl_rows, orl_cols, check) {
 					clearInterval(timer);
 					block[orl_rows][orl_cols] = obj_type;
 					block[obj_rows][obj_cols] = orl_type;
-					set_status(orl_rows, orl_cols, obj_status);
-					set_status(obj_rows, obj_cols, orl_status);
 					if(check)
 						check_blast(orl_rows, orl_cols, block[orl_rows][orl_cols], obj_rows, obj_cols, block[obj_rows][obj_cols], false);
 				}
@@ -529,15 +511,9 @@ function drop() {
 			}
 		}
 	}
-	// var str = '';
-	// for(var i = 0; i < BLOCK_ROWS; i++)
-	// {
-	// str += need_max[i] + "\n";
-	// }
-	// alert(str);
 	//判断是否空位置要比某个下落的位置多，为了解决消除第一行不显示动画的问题
 	for (var i = 0; i < BLOCK_COLS ; i++)
-		if (turn_pixel(line_times[i]) > max_drop) max_drop = turn_pixel(line_times[i]);
+		if (line_times[i] * BLOCK_WIDTH > max_drop) max_drop = line_times[i] * BLOCK_WIDTH;
 
 	//按需求生成新方块
 	var line_max = new Array();
@@ -560,17 +536,11 @@ function drop() {
 		for (var i = BLOCK_ROWS -1; i >= 0 ; i--)
 			if (need_max[i][j] == 0) is_drop_block[i][j] = false;
 			else break;
-	// var str = '';
-	// for(var i = 0; i < BLOCK_ROWS; i++)
-	// {
-	// str += block_status[i] + "\n";
-	// }
-	// alert(str);
 	//将每列需求的方块个数装入新方块数组中
 	for (var i = 0; i < BLOCK_COLS; i++) {
 		var j = 0;
 		while (line_max[i] > 0) {
-			list[i][j] = get_rand();;
+			list[i][j] = parseInt(Math.random() * BLOCK_TYPE) + 1;
 			line_max[i] -= BLOCK_WIDTH;
 			j++;
 		}
@@ -582,7 +552,7 @@ function drop() {
 			for (var i = 0; i < BLOCK_ROWS; i++)
 				for (var j = 0; j < BLOCK_COLS; j++)
 					if(is_drop_block[i][j])
-						ctx.clearRect(turn_pixel(j), turn_pixel(i), BLOCK_HEIGHT, BLOCK_WIDTH);
+						ctx.clearRect(j * BLOCK_WIDTH, i * BLOCK_WIDTH, BLOCK_HEIGHT, BLOCK_WIDTH);
 
 			for (var i = 0; i < BLOCK_ROWS; i++)
 				is_line_draw[i] = 0;
@@ -593,16 +563,16 @@ function drop() {
 						if(need[i][j] > 0) { // 处于下落中的方块
 							if (is_do[i][j] < need_max[i][j])
 								is_do[i][j] += DROP_PIXEL;
-							shape(block[i][j], turn_pixel(j), turn_pixel(i) + is_do[i][j], block_status[i][j], 1);
+							shape(block[i][j], j * BLOCK_WIDTH, i * BLOCK_WIDTH + is_do[i][j], 1);
 						} else if (need[i][j] == 0) // 已经停止的方块
-							shape(block[i][j], turn_pixel(j), turn_pixel(i),  block_status[i][j], 1);
+							shape(block[i][j], j * BLOCK_WIDTH, i * BLOCK_WIDTH, 1);
 						else if ((need[i][j] == -1) && (is_line_draw[j] == 0)) { // 对于被消除的方块而言，新生成的方块
 							is_line_draw[j] = 1;
 							if (is_do[i][j] < list_need[j])
 								is_do[i][j] += DROP_PIXEL;
-							for (var k = 0; k < turn_coordinate(list_max[j]); k++)
+							for (var k = 0; k < parseInt(list_max[j] / BLOCK_WIDTH); k++)
 								if (list[j][k] > 0)
-									shape(list[j][k], turn_pixel(j),is_do[i][j] - turn_pixel(k +1), 0, 1);
+									shape(list[j][k], j * BLOCK_WIDTH, is_do[i][j] - (k + 1) * BLOCK_WIDTH, 1);
 						}
 			max_drop -= DROP_PIXEL;
 		} else {
@@ -625,21 +595,12 @@ function drop() {
 
 						if (i - k < 0) {
 							block[i][j] = sum;
-							set_status(i, j, 0);
 						} else {
 							block[i][j] = block[i - k][j];
-							set_status(i, j, block_status[i - k][j]);
 							block[i - k][j] = 0;
-							set_status(i - k, j, 0);
 						}
 					}
 				}
-			// var str = '';
-			// for(var i = 0; i < BLOCK_ROWS; i++)
-			// {
-			// str += block_status[i] + "\n";
-			// }
-			// alert(str);
 			check_blast(-1, -1, -1, -1, -1, -1, false);
 			check_over();
 		}
@@ -733,204 +694,49 @@ function check_over() {
 	}
 }
 
-function get_rand() {
-	rand = parseInt(Math.random() * BLOCK_TYPE) + 1;
-	while (rand == 8)
-		rand = parseInt(Math.random() * BLOCK_TYPE) + 1;
-	return rand;
-}
 
-function turn_pixel(sum) {
-	return sum * BLOCK_WIDTH;
-}
 
-function set_status(rows, cols, status) {
-	block_status[rows][cols] = status;
-}
 
-function add_score(n, status) {
-	if (status == 0) {
-		//SCORE += (200 * n - 300) * ADDITION;
-		if(n == 3) SCORE += 300;
-		else if(n == 4) SCORE += 500;
-		else SCORE += 200 * n;
-	} else if (status == 1) {
-		SCORE += (200 * n) * ADDITION;
-		BLOCK_FIRE++;
-	} else if (status == 2) {
-		SCORE += (500 * n) * ADDITION;
-		BLOCK_LIGHT++;
-	} else if (status == 3) {
-		SCORE += (1000 * n) * ADDITION;
-		BLOCK_SUPER++;
-	}
+function add_score(n) {
+
+	if(n == 3) SCORE += 300;
+	else if(n == 4) SCORE += 500;
+	else SCORE += 200 * n;
+
 	if (n > ONE_SUM) ONE_SUM = n;
 	ALL_SUM += n;
-	//document.getElementById("score").innerHTML = SCORE;
+	
 	$(".score").html(SCORE);
 }
 
-function shape(type, x, y, status, scale) {
-	var color;
+function shape(type, x, y, scale) {
+
 	ctx.globalCompositeOperation = "source-over";
 	ctx.shadowBlur = 4;
 	ctx.shadowColor = "black";
 	ctx.shadowOffsetX = 1;
 	ctx.shadowOffsetY = 1;
 	
-	//var shadow_color;
-	/* if(type == 5) {
-		var img = new Image();
-		img.src = "apple.svg";
-		img.onload = function(){ctx.drawImage(img, x * scale, y * scale, 60 * scale, 60 * scale);};
-	} */
-	//ctx.beginPath();
-	if(type == 1) { //紫色的三角形
-		/* color = "#E50CE6";
-		ctx.moveTo((x + 30) * scale, (y + 5)* scale);
-		ctx.lineTo((x + 55) * scale, (y + 55) * scale);
-		ctx.lineTo((x + 5) * scale, (y + 55) * scale); */
-		var img = new Image();
-		img.src = "svg/grape.svg";
-		if(img.complete) {
+	var img = new Image();
+	img.src = "svg/" + imgname[type - 1] + ".svg";
+	if(img.complete) {
+		ctx.drawImage(img, x * scale, y * scale, 60 * scale, 60 * scale);
+	} else {
+		img.onload = function() {
 			ctx.drawImage(img, x * scale, y * scale, 60 * scale, 60 * scale);
-		} else {
-			img.onload = function() {
-				ctx.drawImage(img, x * scale, y * scale, 60 * scale, 60 * scale);
-			};
-		}
-	} else if(type == 2) { //黄色的四边形 菱形
-		/* color = "#F9CC16";
-		ctx.moveTo((x + 30) * scale, (y + 5) * scale);
-		ctx.lineTo((x + 55) * scale, (y + 30) * scale);
-		ctx.lineTo((x + 30) * scale, (y + 55) * scale);
-		ctx.lineTo((x + 5) * scale, (y + 30) * scale); */
-		var img = new Image();
-		img.src = "svg/banana.svg";
-		if(img.complete) {
-			ctx.drawImage(img, x * scale, y * scale, 60 * scale, 60 * scale);
-		} else {
-			img.onload = function() {
-				ctx.drawImage(img, x * scale, y * scale, 60 * scale, 60 * scale);
-			};
-		}
-	} else if(type == 3) { //蓝色的五边形 钻石
-		/* color = "#0B73F0";
-		ctx.moveTo((x + 20) * scale, (y + 5) * scale);
-		ctx.lineTo((x + 40) * scale, (y + 5) * scale);
-		ctx.lineTo((x + 55) * scale, (y + 20) * scale);
-		ctx.lineTo((x + 30) * scale, (y + 55) * scale);
-		ctx.lineTo((x + 5) * scale, (y + 20) * scale); */
-		var img = new Image();
-		img.src = "svg/pear.svg";
-		if(img.complete) {
-			ctx.drawImage(img, x * scale, y * scale, 60 * scale, 60 * scale);
-		} else {
-			img.onload = function() {
-				ctx.drawImage(img, x * scale, y * scale, 60 * scale, 60 * scale);
-			};
-		}
-	} else if(type == 4) { //橙色的六边形
-		/* color = "#F9862F";
-		ctx.moveTo((x + 30) * scale, (y + 5) * scale);
-		ctx.lineTo((x + 52) * scale, (y + 17) * scale);
-		ctx.lineTo((x + 52) * scale, (y + 42) * scale);
-		ctx.lineTo((x + 30) * scale, (y + 55) * scale);
-		ctx.lineTo((x + 8) * scale, (y + 42) * scale);
-		ctx.lineTo((x + 8) * scale, (y + 17) * scale); */
-		var img = new Image();
-		img.src = "svg/orange.svg";
-		if(img.complete) {
-			ctx.drawImage(img, x * scale, y * scale, 60 * scale, 60 * scale);
-		} else {
-			img.onload = function() {
-				ctx.drawImage(img, x * scale, y * scale, 60 * scale, 60 * scale);
-			};
-		}
-	} else if(type == 5) { //红色的八边形
-		/* color = "#EA1530";
-		ctx.moveTo((x + 16) * scale, (y + 8) * scale);
-		ctx.lineTo((x + 44) * scale, (y + 8) * scale);
-		ctx.lineTo((x + 52) * scale, (y + 16) * scale);
-		ctx.lineTo((x + 52) * scale, (y + 44) * scale);
-		ctx.lineTo((x + 44) * scale, (y + 52) * scale);
-		ctx.lineTo((x + 16) * scale, (y + 52) * scale);
-		ctx.lineTo((x + 8) * scale, (y + 44) * scale);
-		ctx.lineTo((x + 8) * scale, (y + 16) * scale); */
-		//img = new Image();
-		//img.src = "";
-		var img = new Image();
-		img.src = "svg/apple.svg";
-		if(img.complete) {
-			ctx.drawImage(img, x * scale, y * scale, 60 * scale, 60 * scale);
-		} else {
-			img.onload = function() {
-				ctx.drawImage(img, x * scale, y * scale, 60 * scale, 60 * scale);
-			};
-		}
-		//img.src = "apple.svg";
-		//ctx.drawImage(img, x * scale, y * scale, 60 * scale, 60 * scale);
-		//img.onload = function(){ctx.drawImage(img, x * scale, y * scale, 60 * scale, 60 * scale);};
-		//img.src = "apple.svg";
-	} else if(type == 6) { //绿色的十边形
-		/* color = "#27C941";
-		ctx.moveTo((x + 22) * scale, (y + 8) * scale);
-		ctx.lineTo((x + 36) * scale, (y + 8) * scale);
-		ctx.lineTo((x + 48) * scale, (y + 12) * scale);
-		ctx.lineTo((x + 55) * scale, (y + 30) * scale);
-		ctx.lineTo((x + 48) * scale, (y + 48) * scale);
-		ctx.lineTo((x + 36) * scale, (y + 52) * scale);
-		ctx.lineTo((x + 22) * scale, (y + 52) * scale);
-		ctx.lineTo((x + 12) * scale, (y + 48) * scale);
-		ctx.lineTo((x + 5) * scale, (y + 30) * scale);
-		ctx.lineTo((x + 12) * scale, (y + 12) * scale); */
-		var img = new Image();
-		img.src = "svg/watermelon.svg";
-		if(img.complete) {
-			ctx.drawImage(img, x * scale, y * scale, 60 * scale, 60 * scale);
-		} else {
-			img.onload = function() {
-				ctx.drawImage(img, x * scale, y * scale, 60 * scale, 60 * scale);
-			};
-		}
-	} else if(type == 7) { // 白色的十二边形  还是做成圆吧
-		/* color = "#D3D3D3";
-		ctx.arc((x + 30) * scale, (y + 30) * scale, 25 * scale, 0, 2 * Math.PI); */
-		var img = new Image();
-		img.src = "svg/coconut.svg";
-		if(img.complete) {
-			ctx.drawImage(img, x * scale, y * scale, 60 * scale, 60 * scale);
-		} else {
-			img.onload = function() {
-				ctx.drawImage(img, x * scale, y * scale, 60 * scale, 60 * scale);
-			};
-		}
+		};
 	}
-
-	//ctx.closePath();
-
-	
-
-	//边框
-	//ctx.strokeStyle = "black";
-	//ctx.lineWidth = 1;//线条宽度
-	//ctx.miterLimit = 2;//斜接长度
-	//ctx.stroke();
-
-	//ctx.fillStyle = color;
-	//ctx.fill();
-
-	//阴影
-	
 }
 
 
 function mouse_touch_down(x, y) {
+	
 	if(is_move_time || is_blast_time || is_drop_time || is_tips) return false;
+	
 	is_press = true;
 	now_cols = parseInt(x / BLOCK_HEIGHT);
 	now_rows = parseInt(y / BLOCK_WIDTH);
-	//alert(focus_rows);
+
 	if(focus_rows == -1) { // 如果当前没有选中状态，那么选中点击方块
 		set_focus("add", now_rows, now_cols);
 	} else { //  否则判断当前点击的方块是否为上次点击的方块
@@ -945,11 +751,11 @@ function mouse_touch_down(x, y) {
 	}
 }
 function mouse_touch_move(x, y) {
-
+	
 	if (! is_press || is_move_time || is_blast_time || is_drop_time || is_tips) return false;
-	//alert(123);
-	var this_cols = turn_coordinate(x);
-	var this_rows = turn_coordinate(y);
+
+	var this_cols = parseInt(x / BLOCK_WIDTH);
+	var this_rows = parseInt(y / BLOCK_WIDTH);
 
 	if (this_rows == focus_rows) {
 		if ((this_cols > focus_cols) && (focus_cols < 7)) // 向右
@@ -982,9 +788,7 @@ function mouse_up(event) {
 }
 
 
-function turn_coordinate(sum) {
-	return parseInt(sum / BLOCK_WIDTH);
-}
+
 function set_focus(mode, rows, cols) { // 将当前点击的坐标设置为点击状态
 	var this_x = cols * BLOCK_WIDTH;
 	var this_y = rows * BLOCK_HEIGHT;
@@ -1087,10 +891,10 @@ function rank() {
 	content += "</table></div>";
 	layer.open( {
 		type: 1,
-title: '排行榜',
+		title: '排行榜',
 		shift: 3,
-area: ["600px", "400px"],
-content: content
+		area: ["600px", "400px"],
+		content: content
 	});
 }
 
@@ -1115,10 +919,10 @@ function scorehistory() {
 	content += "</table></div>";
 	layer.open( {
 		type: 1,
-title: '历史数据',
+		title: '历史数据',
 		shift: 3,
-area: ["600px", "400px"],
-content: content
+		area: ["600px", "400px"],
+		content: content
 	});
 }
 
@@ -1142,9 +946,9 @@ function date(time) {
 
 function help() {
 	layer.open( {
-title: '帮助',
+		title: '帮助',
 		shift: 3,
-content: '操作方法：<br>(1)点击一个方块之后再点击另一个方块<br>(2)拖拽某个方块<br><br>支持浏览器：<br>Google Chrome, Mozilla FireFox<br>推荐使用Google Chrome浏览器获得最佳体验<br><br>made by myluo',
+		content: '操作方法：<br>(1)点击一个方块之后再点击另一个方块<br>(2)拖拽某个方块<br><br>支持浏览器：<br>Google Chrome, Mozilla FireFox<br>推荐使用Google Chrome浏览器获得最佳体验<br><br>made by myluo',
 	});
 }
 
@@ -1152,6 +956,7 @@ content: '操作方法：<br>(1)点击一个方块之后再点击另一个方块
 
 
 function restart() {
+	if(is_move_time || is_blast_time || is_drop_time) return false;
 	is_restart = true;
 	is_tips = false;
 	start();
@@ -1203,8 +1008,6 @@ function tips() {
 	var x2 = parseInt(second / BLOCK_COLS);
 	var y2 = second % BLOCK_COLS;
 
-	//alert(x1 + "," + y1 + "," + x2 + "," + y2)
-
 	is_tips = true;
 	set_focus("add", x1, y1);
 	sleep(this,10);
@@ -1225,18 +1028,20 @@ function tips() {
 }
 
 function normal() {
+	if(is_move_time || is_blast_time || is_drop_time) return false;
 	TYPE = 0;
 	restart();
 }
 
 function timerial() {
+	if(is_move_time || is_blast_time || is_drop_time) return false;
 	TYPE = 1;
 	restart();
 }
 
 
 
-function start1() {
+function starttime() {
 
 	if(myalpha == 0) {
 		mybeta += 360 / ALLTIME;
@@ -1293,7 +1098,7 @@ function cleartime() {
 
 function countDown() {
 	cleartime();
-	t1 = setInterval("start1()", 100);
+	t1 = setInterval("starttime()", 100);
 	is_time = true;
 }
 
